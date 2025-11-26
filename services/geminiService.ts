@@ -9,6 +9,7 @@ export const getCuratedContent = async (category: ResourceType) => {
   let prompt = "";
   
   // Custom prompts to generate a dashboard-like experience for each category
+  // requesting structure from Basic to Advanced
   switch (category) {
     case ResourceType.VIDEO_LECTURE:
       prompt = `
@@ -24,14 +25,16 @@ export const getCuratedContent = async (category: ResourceType) => {
     case ResourceType.WHITE_PAPER:
       prompt = `
         Find 5-7 essential and trusted White Papers and academic resources for Python in AI/ML.
-        Cover foundational papers (like "Attention Is All You Need") to modern library documentations (PyTorch, TensorFlow whitepapers).
+        Organize them by complexity:
+        1. **Foundational**: Key papers that started modern AI (e.g. Attention Is All You Need).
+        2. **Applied**: Documentation and papers for major libraries (PyTorch, TensorFlow).
         Explain why each paper is critical for an advanced developer.
       `;
       break;
     case ResourceType.NOTES:
       prompt = `
         Find the best comprehensive, free, and open-source written resources, cheat sheets, and notes for Python.
-        Include resources for:
+        Structure the list:
         1. **Beginner Guides**: (e.g., W3Schools, Python.org docs)
         2. **Advanced Handbooks**: (e.g., The Hitchhiker’s Guide to Python, Real Python advanced tutorials, Awesome Python lists on GitHub).
         Summarize the key strengths of each resource.
@@ -42,6 +45,13 @@ export const getCuratedContent = async (category: ResourceType) => {
         List trusted, open-source, real-time Python projects for learning AI and Data Science.
         Focus on projects with active GitHub repositories (e.g., YOLO implementations, LangChain agents, Scikit-learn real-world examples).
         Categorize them by difficulty: Beginner, Intermediate, Advanced.
+      `;
+      break;
+    case ResourceType.HANDS_ON:
+      prompt = `
+        Find interactive and hands-on coding environments or experiment lists for Python AI/ML.
+        Include platforms like Kaggle Kernels, Google Colab notebooks, and interactive courses.
+        Sort from Basic (Syntax practice) to Advanced (Model training).
       `;
       break;
     default:

@@ -4,7 +4,7 @@ import { CategorySelector } from './components/CategorySelector';
 import { ResultCard } from './components/ResultCard';
 import { getCuratedContent } from './services/geminiService';
 import { ResourceType, SearchResult } from './types';
-import { Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles, BookOpenCheck } from 'lucide-react';
 
 const App: React.FC = () => {
   // Default to Video Lectures as requested for the home page
@@ -56,7 +56,7 @@ const App: React.FC = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
         {/* Header Section */}
-        <div className="mb-10 text-center md:text-left md:flex md:items-end md:justify-between border-b border-slate-800 pb-8">
+        <div className="mb-10 text-center md:text-left border-b border-slate-800 pb-8">
           <div className="space-y-4">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-900/30 border border-brand-800/50 text-brand-300 text-xs font-medium uppercase tracking-wider">
               <Sparkles className="h-3 w-3" />
@@ -86,9 +86,14 @@ const App: React.FC = () => {
         {/* Content Area */}
         <div className="min-h-[400px]">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center h-64 space-y-4 animate-in fade-in duration-500">
-              <Loader2 className="h-10 w-10 text-brand-500 animate-spin" />
-              <p className="text-slate-500 animate-pulse">Curating best {activeCategory.toLowerCase()} for you...</p>
+            <div className="flex flex-col items-center justify-center h-96 space-y-4 animate-in fade-in duration-500">
+              <div className="relative">
+                <div className="absolute inset-0 bg-brand-500/20 blur-xl rounded-full"></div>
+                <Loader2 className="h-12 w-12 text-brand-500 animate-spin relative z-10" />
+              </div>
+              <p className="text-slate-400 font-medium animate-pulse">
+                Curating trusted {activeCategory.toLowerCase()}...
+              </p>
             </div>
           ) : error ? (
             <div className="p-8 bg-red-900/10 border border-red-900/50 rounded-2xl text-center text-red-400">
@@ -106,7 +111,12 @@ const App: React.FC = () => {
             </div>
           ) : contentCache[activeCategory] ? (
             <ResultCard result={contentCache[activeCategory]!} />
-          ) : null}
+          ) : (
+             <div className="flex flex-col items-center justify-center h-64 text-slate-600">
+                <BookOpenCheck className="h-12 w-12 mb-4 opacity-50" />
+                <p>Select a category to begin.</p>
+             </div>
+          )}
         </div>
 
       </main>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { SearchResult } from '../types';
-import { ExternalLink, Quote, PlayCircle, FileText, CheckCircle2 } from 'lucide-react';
+import { ExternalLink, Quote, PlayCircle, FileText, CheckCircle2, Youtube } from 'lucide-react';
 
 interface ResultCardProps {
   result: SearchResult;
@@ -15,11 +15,14 @@ const getYouTubeId = (url: string) => {
 export const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
   // Format the text to handle basic markdown-like headers and lists visually
   const formattedText = result.text.split('\n').map((line, idx) => {
+    // Headers for Levels (Basic, Intermediate, Advanced)
     if (line.startsWith('## ')) {
       return (
-        <div key={idx} className="flex items-center gap-2 mt-8 mb-4 pb-2 border-b border-slate-700/50">
-          <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-          <h3 className="text-xl font-bold text-white">{line.replace('## ', '')}</h3>
+        <div key={idx} className="flex items-center gap-3 mt-10 mb-6 pb-2 border-b border-slate-700/50">
+          <div className="p-1 bg-emerald-500/10 rounded-full">
+             <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+          </div>
+          <h3 className="text-2xl font-bold text-white tracking-tight">{line.replace('## ', '')}</h3>
         </div>
       );
     }
@@ -27,10 +30,15 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
       return <h4 key={idx} className="text-lg font-semibold text-brand-300 mt-6 mb-3">{line.replace('### ', '')}</h4>;
     }
     if (line.startsWith('- ') || line.startsWith('* ')) {
-      return <li key={idx} className="ml-4 mb-2 text-slate-300 list-disc pl-2 marker:text-brand-500">{line.replace(/^[-*] /, '')}</li>;
+      return (
+        <li key={idx} className="ml-4 mb-3 text-slate-300 list-none pl-2 flex items-start gap-2">
+          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand-500 flex-shrink-0" />
+          <span className="leading-relaxed">{line.replace(/^[-*] /, '')}</span>
+        </li>
+      );
     }
     if (line.trim() === '') {
-      return <div key={idx} className="h-2" />;
+      return <div key={idx} className="h-3" />;
     }
     // Bold text handling
     const parts = line.split(/(\*\*.*?\*\*)/g);
@@ -51,18 +59,20 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
   const textSources = sources?.filter(c => c.web?.uri && !getYouTubeId(c.web.uri));
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       
       {/* Featured Video Grid (Only if videos are found) */}
       {videoSources && videoSources.length > 0 && (
-        <div className="mb-10">
-          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-            <PlayCircle className="h-5 w-5 text-brand-400" />
-            Featured Trusted Lectures
+        <div className="mb-12">
+          <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <Youtube className="h-6 w-6 text-red-500" />
+            Featured Lectures
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {videoSources.map((chunk, idx) => {
                const videoId = getYouTubeId(chunk.web!.uri);
+               if (!videoId) return null;
+               
                return (
                  <a
                   key={`video-${idx}`}
@@ -71,20 +81,18 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
                   rel="noopener noreferrer"
                   className="group relative block overflow-hidden rounded-xl bg-slate-900 border border-slate-800 hover:border-brand-500 transition-all shadow-lg hover:shadow-brand-500/20"
                  >
-                   {videoId && (
-                     <div className="aspect-video w-full overflow-hidden bg-slate-950 relative">
-                       <img 
-                         src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`} 
-                         alt={chunk.web?.title}
-                         className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                       />
-                       <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-transparent transition-colors">
-                         <div className="w-12 h-12 rounded-full bg-brand-600/90 flex items-center justify-center group-hover:scale-110 transition-transform">
-                           <PlayCircle className="h-6 w-6 text-white fill-white" />
-                         </div>
+                   <div className="aspect-video w-full overflow-hidden bg-slate-950 relative">
+                     <img 
+                       src={`https://img.youtube.com/vi/${videoId}/mqdefault.jpg`} 
+                       alt={chunk.web?.title}
+                       className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity transform group-hover:scale-105 duration-500"
+                     />
+                     <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-transparent transition-colors">
+                       <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xl">
+                         <PlayCircle className="h-7 w-7 text-white fill-white ml-0.5" />
                        </div>
                      </div>
-                   )}
+                   </div>
                    <div className="p-4">
                      <h4 className="text-sm font-medium text-white line-clamp-2 group-hover:text-brand-300 transition-colors">
                        {chunk.web?.title}
@@ -114,7 +122,7 @@ export const ResultCard: React.FC<ResultCardProps> = ({ result }) => {
             {textSources && textSources.length > 0 && (
               <div className="space-y-4">
                 <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                  <FileText className="h-4 w-4" /> Recommended Readings
+                  <FileText className="h-4 w-4" /> Trusted References
                 </h3>
                 <div className="space-y-3">
                   {textSources.map((chunk, idx) => (
