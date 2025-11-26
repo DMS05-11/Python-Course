@@ -1,10 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
 import { ResourceType } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 export const getCuratedContent = async (category: ResourceType) => {
   const modelId = "gemini-2.5-flash"; 
+
+  // Initialize inside function to ensure environment is ready and catch errors gracefully
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   let prompt = "";
   
