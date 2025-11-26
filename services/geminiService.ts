@@ -4,8 +4,15 @@ import { ResourceType } from "../types";
 export const getCuratedContent = async (category: ResourceType) => {
   const modelId = "gemini-2.5-flash"; 
 
+  // Check for API Key explicitly to help with deployment debugging
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.error("API_KEY is missing. Ensure it is set in your .env file and included in the build.");
+    throw new Error("API Key is missing. Please check your application configuration.");
+  }
+
   // Initialize inside function to ensure environment is ready and catch errors gracefully
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey });
 
   let prompt = "";
   

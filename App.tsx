@@ -4,7 +4,7 @@ import { CategorySelector } from './components/CategorySelector';
 import { ResultCard } from './components/ResultCard';
 import { getCuratedContent } from './services/geminiService';
 import { ResourceType, SearchResult } from './types';
-import { Loader2, Sparkles, BookOpenCheck } from 'lucide-react';
+import { Loader2, Sparkles, BookOpenCheck, AlertTriangle } from 'lucide-react';
 
 const App: React.FC = () => {
   // Default to Video Lectures as requested for the home page
@@ -39,8 +39,13 @@ const App: React.FC = () => {
           ...prev,
           [activeCategory]: result
         }));
-      } catch (err) {
-        setError("Unable to load trusted resources. Please try refreshing.");
+      } catch (err: any) {
+        // Provide a clearer error message if it's likely an API Key issue
+        if (err.message?.includes('API Key is missing')) {
+            setError("API Key is missing. Please check your build configuration or .env file.");
+        } else {
+            setError("Unable to load trusted resources. Please try refreshing.");
+        }
       } finally {
         setIsLoading(false);
       }
@@ -96,7 +101,9 @@ const App: React.FC = () => {
               </p>
             </div>
           ) : error ? (
-            <div className="p-8 bg-red-900/10 border border-red-900/50 rounded-2xl text-center text-red-400">
+            <div className="flex flex-col items-center justify-center p-8 bg-red-900/10 border border-red-900/50 rounded-2xl text-center text-red-400">
+              <AlertTriangle className="h-10 w-10 mb-3 text-red-500" />
+              <p className="font-semibold mb-2">Connection Error</p>
               <p>{error}</p>
               <button 
                 onClick={() => setContentCache(prev => {
@@ -104,7 +111,7 @@ const App: React.FC = () => {
                   delete newCache[activeCategory];
                   return newCache;
                 })} // Clear cache to force retry
-                className="mt-4 px-4 py-2 bg-red-900/30 hover:bg-red-900/50 rounded-lg text-sm transition-colors"
+                className="mt-6 px-4 py-2 bg-red-900/30 hover:bg-red-900/50 rounded-lg text-sm transition-colors"
               >
                 Retry
               </button>
